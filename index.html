@@ -132,6 +132,35 @@
             color: #ccc;
         }
 
+        .save-status {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 0.72rem;
+            color: #bbb;
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+
+        .save-status.saving {
+            color: #f59e0b;
+        }
+
+        .save-status.saved {
+            color: #86efac;
+        }
+
+        .textarea-wrap {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .textarea-wrap textarea {
+            flex: 1;
+        }
+
         footer {
             text-align: center;
             padding: 16px;
@@ -159,7 +188,10 @@
 
 <main>
     <div class="hint">Paste anything — formatting is stripped automatically.</div>
-    <textarea id="text" placeholder="Paste your text here…" spellcheck="false"></textarea>
+    <div class="textarea-wrap">
+        <span class="save-status" id="save-status"></span>
+        <textarea id="text" placeholder="Paste your text here…" spellcheck="false"></textarea>
+    </div>
 </main>
 
 <footer>puretextfield.com &mdash; clean text, happy life</footer>
@@ -198,11 +230,31 @@
     })();
     const STORAGE_KEY = 'ptf-content-' + TAB_ID;
     let saveTimer = null;
+    let countTimer = null;
+    let countdown = 0;
+
+    function setStatus(text, cls) {
+        const el = document.getElementById('save-status');
+        el.textContent = text;
+        el.className = 'save-status' + (cls ? ' ' + cls : '');
+    }
 
     function scheduleSave() {
         clearTimeout(saveTimer);
+        clearInterval(countTimer);
+        countdown = 10;
+        setStatus('Auto save in ' + countdown + ' sec.', 'saving');
+        countTimer = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+                setStatus('Auto save in ' + countdown + ' sec.', 'saving');
+            } else {
+                clearInterval(countTimer);
+            }
+        }, 1000);
         saveTimer = setTimeout(() => {
             localStorage.setItem(STORAGE_KEY, document.getElementById('text').value);
+            setStatus('Content saved', 'saved');
         }, 10000);
     }
 
@@ -211,13 +263,15 @@
         t.value = '';
         t.focus();
         clearTimeout(saveTimer);
+        clearInterval(countTimer);
         localStorage.removeItem(STORAGE_KEY);
+        setStatus('', '');
     }
 
     window.onload = () => {
         const t = document.getElementById('text');
         const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) t.value = saved;
+        if (saved) { t.value = saved; setStatus('Content saved', 'saved'); }
         t.focus();
         t.addEventListener('input', scheduleSave);
     };
