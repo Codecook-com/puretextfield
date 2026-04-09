@@ -89,6 +89,97 @@
             margin: 0 2px;
         }
 
+        .btn-info {
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: #fff;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            line-height: 1;
+        }
+
+        .btn-info:hover {
+            background: #f0f0ee;
+            border-color: #ccc;
+            color: #444;
+        }
+
+        .info-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-bottom: 1px solid #e5e5e5;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 32px 48px;
+            z-index: 100;
+            transform: translateY(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .info-panel.open {
+            transform: translateY(0);
+        }
+
+        .info-panel h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .info-panel p {
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.7;
+            max-width: 680px;
+        }
+
+        .info-panel .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .info-panel .feature {
+            font-size: 0.75rem;
+            background: #f5f5f3;
+            border: 1px solid #e5e5e5;
+            border-radius: 5px;
+            padding: 4px 10px;
+            color: #555;
+        }
+
+        .info-close {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #aaa;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px;
+        }
+
+        .info-close:hover { color: #333; }
+
+        .info-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99;
+        }
+
+        .info-overlay.open { display: block; }
+
         main {
             flex: 1;
             display: flex;
@@ -166,8 +257,29 @@
         <div class="btn-sep"></div>
         <button class="btn" onclick="decode()">Decode URL</button>
         <button class="btn" onclick="encode()">Encode URL</button>
+        <div class="btn-sep"></div>
+        <button class="btn-info" onclick="toggleInfo()" title="About">ℹ</button>
     </div>
 </header>
+
+<div class="info-overlay" id="info-overlay" onclick="toggleInfo()"></div>
+<div class="info-panel" id="info-panel">
+    <button class="info-close" onclick="toggleInfo()">✕</button>
+    <h2>What is Pure Text Field?</h2>
+    <p>
+        A minimal tool that strips all formatting from any text you paste into it — fonts, sizes, colors, links, bold, italic — leaving you with clean, plain text ready to use anywhere.
+        <br><br>
+        Your content is saved automatically in your browser's local storage and restored on refresh. Each browser tab is fully independent with its own content. No database, no server-side processing — nothing you type ever leaves your device.
+    </p>
+    <div class="features">
+        <span class="feature">Copy to clipboard</span>
+        <span class="feature">Clear field</span>
+        <span class="feature">LTR / RTL direction</span>
+        <span class="feature">URL encode &amp; decode</span>
+        <span class="feature">Auto-save per tab</span>
+        <span class="feature">No tracking · No storage</span>
+    </div>
+</div>
 
 <main>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -249,6 +361,11 @@
         clearInterval(countTimer);
         localStorage.removeItem(STORAGE_KEY);
         setStatus('');
+    }
+
+    function toggleInfo() {
+        document.getElementById('info-panel').classList.toggle('open');
+        document.getElementById('info-overlay').classList.toggle('open');
     }
 
     window.onload = () => {
