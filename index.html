@@ -190,8 +190,13 @@
         t.value = encodeURIComponent(t.value).replace(/'/g, "%27").replace(/"/g, "%22");
     }
 
-    // Persist content across refreshes (localStorage, 10s debounce)
-    const STORAGE_KEY = 'ptf-content';
+    // Persist content across refreshes — each tab is independent
+    const TAB_ID = sessionStorage.getItem('ptf-tab-id') || (() => {
+        const id = Math.random().toString(36).slice(2);
+        sessionStorage.setItem('ptf-tab-id', id);
+        return id;
+    })();
+    const STORAGE_KEY = 'ptf-content-' + TAB_ID;
     let saveTimer = null;
 
     function scheduleSave() {
