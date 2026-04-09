@@ -165,11 +165,6 @@
 <footer>puretextfield.com &mdash; clean text, happy life</footer>
 
 <script>
-    function clearField() {
-        document.getElementById('text').value = '';
-        document.getElementById('text').focus();
-    }
-
     function copyAll() {
         const t = document.getElementById('text');
         if (!t.value) return;
@@ -195,8 +190,32 @@
         t.value = encodeURIComponent(t.value).replace(/'/g, "%27").replace(/"/g, "%22");
     }
 
-    // Auto-focus on load
-    window.onload = () => document.getElementById('text').focus();
+    // Persist content across refreshes (localStorage, 10s debounce)
+    const STORAGE_KEY = 'ptf-content';
+    let saveTimer = null;
+
+    function scheduleSave() {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+            localStorage.setItem(STORAGE_KEY, document.getElementById('text').value);
+        }, 10000);
+    }
+
+    function clearField() {
+        const t = document.getElementById('text');
+        t.value = '';
+        t.focus();
+        clearTimeout(saveTimer);
+        localStorage.removeItem(STORAGE_KEY);
+    }
+
+    window.onload = () => {
+        const t = document.getElementById('text');
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) t.value = saved;
+        t.focus();
+        t.addEventListener('input', scheduleSave);
+    };
 </script>
 
 <!-- Google Analytics -->
