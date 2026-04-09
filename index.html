@@ -133,32 +133,15 @@
         }
 
         .save-status {
-            position: absolute;
-            top: 8px;
-            right: 12px;
-            font-size: 0.72rem;
-            color: #bbb;
+            font-size: 0.78rem;
+            color: #1a1a1a;
             pointer-events: none;
-            transition: color 0.3s ease;
-        }
-
-        .save-status.saving {
-            color: #f59e0b;
-        }
-
-        .save-status.saved {
-            color: #86efac;
         }
 
         .textarea-wrap {
-            position: relative;
             flex: 1;
             display: flex;
             flex-direction: column;
-        }
-
-        .textarea-wrap textarea {
-            flex: 1;
         }
 
         footer {
@@ -187,9 +170,11 @@
 </header>
 
 <main>
-    <div class="hint">Paste anything — formatting is stripped automatically.</div>
-    <div class="textarea-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="hint" style="margin-bottom:0;">Paste anything — formatting is stripped automatically.</div>
         <span class="save-status" id="save-status"></span>
+    </div>
+    <div class="textarea-wrap">
         <textarea id="text" placeholder="Paste your text here…" spellcheck="false"></textarea>
     </div>
 </main>
@@ -233,28 +218,26 @@
     let countTimer = null;
     let countdown = 0;
 
-    function setStatus(text, cls) {
-        const el = document.getElementById('save-status');
-        el.textContent = text;
-        el.className = 'save-status' + (cls ? ' ' + cls : '');
+    function setStatus(text) {
+        document.getElementById('save-status').textContent = text;
     }
 
     function scheduleSave() {
         clearTimeout(saveTimer);
         clearInterval(countTimer);
         countdown = 10;
-        setStatus('Auto save in ' + countdown + ' sec.', 'saving');
+        setStatus('Auto save in ' + countdown + ' sec.');
         countTimer = setInterval(() => {
             countdown--;
             if (countdown > 0) {
-                setStatus('Auto save in ' + countdown + ' sec.', 'saving');
+                setStatus('Auto save in ' + countdown + ' sec.');
             } else {
                 clearInterval(countTimer);
             }
         }, 1000);
         saveTimer = setTimeout(() => {
             localStorage.setItem(STORAGE_KEY, document.getElementById('text').value);
-            setStatus('Content saved', 'saved');
+            setStatus('Content saved');
         }, 10000);
     }
 
@@ -265,13 +248,13 @@
         clearTimeout(saveTimer);
         clearInterval(countTimer);
         localStorage.removeItem(STORAGE_KEY);
-        setStatus('', '');
+        setStatus('');
     }
 
     window.onload = () => {
         const t = document.getElementById('text');
         const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) { t.value = saved; setStatus('Content saved', 'saved'); }
+        if (saved) { t.value = saved; setStatus('Content saved'); }
         t.focus();
         t.addEventListener('input', scheduleSave);
     };
