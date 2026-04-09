@@ -147,10 +147,10 @@
     <div class="logo"><img src="favicon.ico" style="width:18px;height:18px;vertical-align:middle;margin-right:8px;">pure<span>textfield</span></div>
     <div class="toolbar">
         <button class="btn" onclick="copyAll()">Copy</button>
-        <button class="btn primary" onclick="clearField()">Clear</button>
+        <button class="btn" onclick="clearField()">Clear</button>
         <div class="btn-sep"></div>
-        <button class="btn" onclick="setDir('ltr')">LTR</button>
-        <button class="btn" onclick="setDir('rtl')">RTL</button>
+        <button class="btn primary" id="btn-ltr" onclick="setDir('ltr')">LTR</button>
+        <button class="btn" id="btn-rtl" onclick="setDir('rtl')">RTL</button>
         <div class="btn-sep"></div>
         <button class="btn" onclick="decode()">Decode URL</button>
         <button class="btn" onclick="encode()">Encode URL</button>
@@ -181,6 +181,8 @@
 
     function setDir(dir) {
         document.getElementById('text').style.direction = dir;
+        document.getElementById('btn-ltr').classList.toggle('primary', dir === 'ltr');
+        document.getElementById('btn-rtl').classList.toggle('primary', dir === 'rtl');
     }
 
     function decode() {
