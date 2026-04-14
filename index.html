@@ -229,6 +229,26 @@
             pointer-events: none;
         }
 
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(1rem);
+            background: #1a1a1a;
+            color: #fff;
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
         .textarea-wrap {
             flex: 1;
             display: flex;
@@ -291,15 +311,28 @@
     </div>
 </main>
 
+<div id="toast">Copied!</div>
 <footer>puretextfield.com &mdash; clean text, happy life</footer>
 
 <script>
+    let toastTimer = null;
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
     function copyAll() {
         const t = document.getElementById('text');
         if (!t.value) return;
-        navigator.clipboard.writeText(t.value).catch(() => {
+        navigator.clipboard.writeText(t.value).then(() => {
+            showToast('Copied!');
+        }).catch(() => {
             t.select();
             document.execCommand('copy');
+            showToast('Copied!');
         });
     }
 
