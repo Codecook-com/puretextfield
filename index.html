@@ -337,7 +337,7 @@
     function scheduleSave() {
         clearTimeout(saveTimer);
         clearInterval(countTimer);
-        countdown = 10;
+        countdown = 5;
         setStatus('Auto save in ' + countdown + ' sec.');
         countTimer = setInterval(() => {
             countdown--;
@@ -350,7 +350,7 @@
         saveTimer = setTimeout(() => {
             localStorage.setItem(STORAGE_KEY, document.getElementById('text').value);
             setStatus('Content saved');
-        }, 10000);
+        }, 5000);
     }
 
     function clearField() {
