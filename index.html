@@ -278,6 +278,8 @@
         <button class="btn" onclick="decode()">Decode URL</button>
         <button class="btn" onclick="encode()">Encode URL</button>
         <div class="btn-sep"></div>
+        <button class="btn" onclick="stripHtml()">Strip HTML</button>
+        <div class="btn-sep"></div>
         <button class="btn-info" onclick="toggleInfo()" title="About">ℹ</button>
     </div>
 </header>
@@ -296,6 +298,7 @@
         <span class="feature">Clear field</span>
         <span class="feature">LTR / RTL direction</span>
         <span class="feature">URL encode &amp; decode</span>
+        <span class="feature">Strip HTML markup</span>
         <span class="feature">Auto-save per tab</span>
         <span class="feature">No tracking · No storage</span>
     </div>
@@ -350,6 +353,28 @@
     function encode() {
         const t = document.getElementById('text');
         t.value = encodeURIComponent(t.value).replace(/'/g, "%27").replace(/"/g, "%22");
+    }
+
+    function stripHtml() {
+        const t = document.getElementById('text');
+        if (!t.value) return;
+        let s = t.value;
+        // Drop script/style blocks entirely (including their contents)
+        s = s.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, '');
+        // Turn block-level closers and <br> into line breaks
+        s = s.replace(/<\s*br\s*\/?\s*>/gi, '\n');
+        s = s.replace(/<\/\s*(p|div|li|tr|h[1-6]|blockquote|section|article|header|footer)\s*>/gi, '\n');
+        // Remove all remaining tags and HTML comments
+        s = s.replace(/<!--[\s\S]*?-->/g, '');
+        s = s.replace(/<[^>]+>/g, '');
+        // Decode HTML entities via the browser
+        const ta = document.createElement('textarea');
+        ta.innerHTML = s;
+        s = ta.value;
+        // Tidy up excess whitespace from removed markup
+        s = s.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+        t.value = s;
+        scheduleSave();
     }
 
     // Persist content across refreshes — each tab is independent
